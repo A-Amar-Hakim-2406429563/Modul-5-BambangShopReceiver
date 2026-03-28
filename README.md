@@ -85,5 +85,51 @@ This is the place for you to write reflections:
 ### Mandatory (Subscriber) Reflections
 
 #### Reflection Subscriber-1
+1. Menurut aku, kita itu perlu pakai RwLock<> krn data Vec<Notification> ini dipake secara bersamaan (concurrent) gitu oleh banyak request.
+
+Misalnya:
+- ada request masuk buat nambah notification (add)
+- ada request lain buat baca semua notification (list_all_as_string)
+
+Kalau tanpa lock, bisa terjadi:
+- data race
+- hasil data tidak konsisten
+- bahkan crash
+
+Nah, RwLock itu cocok karena:
+- bisa banyak reader secara bersamaan (read lock)
+- tapi tetap aman kalau ada writer (write lock)
+
+Jadi lebih efisien dibanding Mutex.
+
+Kalau pakai Mutex:
+- semua akses (read & write) harus ngantri satu-satu gituu
+- padahal read itu bisa dilakukan bareng-bareng
+
+Makanya menurut aku:
+- RwLock lebih optimal utk kasus ini krn read lebih sering daripada write.
+
+2. Menurut aku, Rust gk langsung ngizinin kita mutate static variable seperti di Java krn Rust itu sangat ketat soal memory safety dan thread safety.
+
+Di Java:
+- static variable bisa diubah bebas
+- tapi bisa rawan race condition kalau gk hati-hati
+
+Sedangkan di Rust:
+- static itu default nya immutable
+- kalau mau mutable harus pakai mekanisme yg aman (seperti RwLock, Mutex, dll)
+
+Makanya disini itu kita disuruh pakai lazy_static gituu, supaya:
+- bisa bikin static variable yg diinisialisasi saat runtime
+- tapi tetap aman secara thread-safe
+
+Jadi intinya:
+- Rust "maksa" kita untuk aman dari awal
+- gkk ngasih akses bebas ke shared data tanpa kontrol
+
+Menurut aku ini bagus, karena:
+- mencegah bug concurrency
+- bikin program lebih predictable
+- walaupun emg lebih ribet di awal nya gitu
 
 #### Reflection Subscriber-2
