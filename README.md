@@ -133,3 +133,51 @@ Menurut aku ini bagus, karena:
 - walaupun emg lebih ribet di awal nya gitu
 
 #### Reflection Subscriber-2
+1. Sejujurnya aku sempat liat-liat dikit bagian di luar step tutorial, kayak src/lib.rs gituu, tapi gk terlalu dalam banget aku eksplor.
+
+Alasannya karena aku lagi fokus buat nyelesaiin flow utama dulu (biar sistem notifnya jalan end-to-end). Tapi dari yang aku lihat, di lib.rs itu biasanya berisi:
+- konfigurasi global (kayak APP_CONFIG)
+- setup HTTP client (REQWEST_CLIENT)
+- helper function (misalnya compose_error_response)
+
+Dari situ aku jadi paham kalau:
+- Rust project itu sering misahin config & util biar bisa dipake di bnyk module
+- Jadi code lebih modular dan gk berantakan di satu file doang
+
+2. Menurut aku, Observer pattern ini ngebantu banget buat nambah subscriber.
+Karena:
+- Publisher (Main App) gk perlu tau detail subscriber nya
+- Dia cuma nyimpen list URL subscriber
+- Tinggal loop + kirim notif aja
+
+Jadi kalau mau nambah subscriber:
+- tinggal jalanin instance baru Receiver
+- lalu subscribe --> langsung ke register gitu deh
+
+Ini itu simple banget dan scalable.
+
+Kalau misalnya kita spawn lebih dari satu Main App, menurut aku bakal jadi lebih ribet.
+Soalnya:
+- tiap Main App punya data sendiri (gk shared)
+- subscriber harus subscribe ke masing-masing Main App
+- bisa jadi notif gk konsisten antar instance
+
+Jadi:
+- Observer pattern tetap ngebantu di sisi subscriber gitu
+- tapi utk multi Main App butuh tambahan sistem (misalnya shared database/message broker)
+
+3. Aku sempat coba pakai Postman buat test API, dan menurut aku itu ngebantu banget.
+Beberapa hal yang aku rasa berguna:
+- bisa simpan request (collection)
+- tinggal klik tanpa ngetik ulang
+- gampang ganti parameter (kayak product_type)
+- bisa lihat response dengan jelas
+
+Kalau untuk testing:
+- sangat membantu banget buat ngecek flow subscribe --> create product --> receive notif
+
+utk kedepannya:
+- bisa ditambah test script di Postman (automation) gituu
+- atau bikin dokumentasi API biar tim lain gampang pakai
+
+Menurut aku ini bakal kepake banget juga buat Group Project nanti
